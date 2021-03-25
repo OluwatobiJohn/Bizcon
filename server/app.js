@@ -19,6 +19,9 @@ DB.connect(err => {
 const homeRoute = require("./routes/home");
 app.use("/", homeRoute);
 
+const businessRoute = require("./routes/business");
+app.use("/business", businessRoute);
+
 app.listen(3005, () => {
   console.log("server is starting on port 3005");
 });
