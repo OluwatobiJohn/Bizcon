@@ -4,6 +4,12 @@ const Business = require("../controllers/businessController");
 const Validate = require("../middlewares/businessVal");
 const upload = require("../utilities/multer");
 
+//search business
+router.get("/search", Business.searchBusiness);
+
+//update business
+router.put("/:id", Business.updateBusiness);
+
 //delete business
 router.delete("/:id", Business.deleteBusiness);
 

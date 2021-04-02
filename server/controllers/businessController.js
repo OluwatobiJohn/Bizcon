@@ -2,8 +2,57 @@ const DB = require("../config/db.config");
 const cloudinary = require("../utilities/cloudinary");
 const { validationResult } = require("express-validator");
 
+const searchBusiness = (req, res) => {
+  let search = req.body.search;
+  let sql = `SELECT * FROM Businesses WHERE Businesses.name or Businesses.about LIKE '%${search}%'`;
+
+  try {
+    DB.query(sql, (err, result) => {
+      if (err) throw err;
+
+      if (result.length === 0) {
+        res.json({
+          message: `${search} keyword did not return any Businesses`
+        });
+      } else {
+        res.json({
+          message: `results for ${search} keyword`,
+          Business: result
+        });
+      }
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const updateBusiness = (req, res) => {
+  const updateBiz = {
+    name: req.body.name,
+    about: req.body.about,
+    category: req.body.category,
+    address: req.body.address,
+    location: req.body.location,
+    telephone: req.body.telephone
+  };
+  let sql = `UPDATE Businesses SET ? WHERE businessID = ${req.params.id}`;
+
+  try {
+    DB.query(sql, updateBiz, (err, result) => {
+      if (err) throw err;
+      console.log(updateBiz);
+      res.json({
+        message: `Business with id ${req.params.id} found`,
+        business: updateBiz
+      });
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const deleteBusiness = (req, res) => {
-  let sql = `DELETE FROM businesses WHERE businessID = ${req.params.id}`;
+  let sql = `DELETE FROM Businesses WHERE businessID = ${req.params.id}`;
 
   try {
     DB.query(sql, (err, result) => {
@@ -27,7 +76,7 @@ const specificBusiness = (req, res) => {
     DB.query(sql, (err, result) => {
       if (err) throw err;
       if (result[0] == null) {
-        res.json({ message: `Book with id ${req.params.id} not found` });
+        res.json({ message: `Business with id ${req.params.id} not found` });
       } else if (result !== []) {
         res.json({
           message: `Business with id ${req.params.id}`,
@@ -89,6 +138,8 @@ const allBusinesses = (req, res) => {
   }
 };
 module.exports = {
+  searchBusiness,
+  updateBusiness,
   deleteBusiness,
   specificBusiness,
   postBusiness,
